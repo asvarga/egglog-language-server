@@ -1,5 +1,5 @@
 #!/bin/bash
-# Quick install script for the updated egglog-language extension
+# Quick install script for the updated egglog-language-modal extension
 
 set -e
 
@@ -23,7 +23,7 @@ npx @vscode/vsce package
 # Install extension
 echo ""
 echo "Installing extension..."
-code --install-extension egglog-language-*.vsix
+code --install-extension egglog-language-modal-*.vsix
 
 echo ""
 echo "=== Installation Complete ==="
