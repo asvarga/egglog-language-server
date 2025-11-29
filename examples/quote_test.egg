@@ -1,0 +1,25 @@
+; Test file for quote/unquote syntax with backtick and comma
+
+(datatype Agent (Alice) (Bob) (Charlie))
+(relation Believes (Agent Expr))
+(relation Knows (Agent Expr))
+
+; Using backtick syntax (shorthand for quote)
+(Believes (Alice) ` (Knows (Bob) (Charlie)))
+(Believes (Bob) ` (IsHonest (Charlie)))
+
+; Using comma for unquote
+(let bob ` (Bob))
+(let charlie ` (Charlie))
+(Believes (Alice) ` (Knows , bob , charlie))
+
+; Nested quoting
+(Believes (Charlie) ` (outer (middle (inner x))))
+
+; Simple expressions
+(let x-var `x)
+(let num-lit ` 42)
+
+; Check that beliefs work
+
+(check (Believes (Alice) ` (Knows (Bob) (Charlie))))

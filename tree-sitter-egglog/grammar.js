@@ -43,6 +43,9 @@ module.exports = grammar({
     lparen: ($) => token(choice("(", "[")),
     rparen: ($) => token(choice(")", "]")),
 
+    backtick: ($) => token("`"),
+    comma_op: ($) => token(","),
+
     comma: ($) => repeat1(seq($.expr, ",")),
 
     // This isn't a valid grammar rule, but it's used to handle partial parsing
@@ -212,7 +215,11 @@ module.exports = grammar({
 
     schema: ($) => seq(list($, $.type), $.type),
 
-    expr: ($) => choice($.literal, $.ident, $.callexpr),
+    expr: ($) => choice($.literal, $.ident, $.callexpr, $.quote_expr, $.unquote_expr),
+
+    quote_expr: ($) => seq($.backtick, $.expr),
+
+    unquote_expr: ($) => seq($.comma_op, $.expr),
 
     literal: ($) => choice($.unit, $.bool, $.num, $.f64, $.symstring),
 
