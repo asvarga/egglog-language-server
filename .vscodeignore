@@ -1,2 +1,37 @@
-target
+# Exclude target directory except for the release binary
+target/**
+!target/release
+target/release/**
+!target/release/egglog-language-server
+!target/release/egglog-language-server.exe
+
+# Exclude vsix files
 *.vsix
+
+# Exclude development files
+.git
+.gitignore
+.github
+.vscode
+*.log
+*.swp
+*~
+
+# Exclude source directories we don't need at runtime
+egglog-language-server/src
+tree-sitter-egglog/src
+tree-sitter-egglog/test
+tree-sitter-egglog/examples
+tree-sitter-egglog/bindings
+tree-sitter-egglog/queries
+tree-sitter-egglog/build
+tree-sitter-egglog/Makefile
+tree-sitter-egglog/*.md
+tree-sitter-egglog/*.json
+tree-sitter-egglog/*.gyp
+tree-sitter-egglog/*.toml
+tree-sitter-egglog/*.swift
+tree-sitter-egglog/*.py
+tree-sitter-egglog/.gitattributes
+tree-sitter-egglog/.gitignore
+tree-sitter-egglog/.editorconfig

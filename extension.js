@@ -2,21 +2,41 @@
 const vscode = require("vscode");
 const languageclient = require("vscode-languageclient");
 const { exec } = require("node:child_process");
+const path = require("path");
+const fs = require("fs");
 
 let client;
 
 function activate(context) {
   try {
-    const serverOptions = {
-      command: "cargo",
-      args: [
-        "+stable",
-        "run",
-        "--release",
-        "--manifest-path",
-        context.extensionPath + "/Cargo.toml",
-      ],
-    };
+    // Determine binary name based on platform
+    const platform = process.platform;
+    const binaryName = platform === "win32" ? "egglog-language-server.exe" : "egglog-language-server";
+    const binaryPath = path.join(context.extensionPath, "target", "release", binaryName);
+    
+    let serverOptions;
+    if (fs.existsSync(binaryPath)) {
+      // Use pre-built binary (for packaged extension)
+      console.log(`Using binary at: ${binaryPath}`);
+      serverOptions = {
+        command: binaryPath,
+        args: [],
+      };
+    } else {
+      // Fall back to cargo run (for development)
+      console.log("Binary not found, falling back to cargo run");
+      serverOptions = {
+        command: "cargo",
+        args: [
+          "+stable",
+          "run",
+          "--release",
+          "--manifest-path",
+          path.join(context.extensionPath, "Cargo.toml"),
+        ],
+      };
+    }
+    
     const clientOptions = {
       documentSelector: [
         {
@@ -27,14 +47,16 @@ function activate(context) {
     };
     client = new languageclient.LanguageClient(
       "egglog",
+      "Egglog Language Server",
       serverOptions,
       clientOptions
     );
     context.subscriptions.push(client.start());
   } catch (e) {
     vscode.window.showErrorMessage(
-      "egglog-language-server couldn't be started."
+      "egglog-language-server couldn't be started: " + e.message
     );
+    console.error("Extension activation error:", e);
   }
 
   context.subscriptions.push(

@@ -148,7 +148,10 @@ impl SrcTree {
 
                 match text {
                     text if n.kind() == "lparen" => {
-                        if last_kind == "lparen" {
+                        if last_kind == "lparen"
+                            || last_kind == "backtick"
+                            || last_kind == "comma_op"
+                        {
                             write!(buf, "{}", text).unwrap();
                         } else if emptyline {
                             for _ in 0..tab_width * paren_level {
@@ -185,6 +188,25 @@ impl SrcTree {
                         writeln!(buf, "{}", text).unwrap();
                         emptyline = true;
                     }
+                    text if n.kind() == "backtick" || n.kind() == "comma_op" => {
+                        // Don't add space before backtick or comma after lparen, backtick, or comma_op
+                        if last_kind == "lparen"
+                            || last_kind == "backtick"
+                            || last_kind == "comma_op"
+                        {
+                            write!(buf, "{}", text).unwrap();
+                        } else {
+                            if emptyline {
+                                for _ in 0..tab_width * paren_level {
+                                    write!(buf, " ").unwrap();
+                                }
+                            } else {
+                                write!(buf, " ").unwrap();
+                            }
+                            write!(buf, "{}", text).unwrap();
+                        }
+                        emptyline = false;
+                    }
                     text if n.kind() == "ws" => {
                         let newlines = text.chars().filter(|&c| c == '\n').count();
                         let n = if emptyline { 1 } else { 0 };
@@ -202,7 +224,11 @@ impl SrcTree {
                         }
                     }
                     text => {
-                        if last_kind == "lparen" {
+                        // Don't add space after backtick or comma_op
+                        if last_kind == "lparen"
+                            || last_kind == "backtick"
+                            || last_kind == "comma_op"
+                        {
                             write!(buf, "{}", text).unwrap();
                         } else {
                             if emptyline {
@@ -656,6 +682,13 @@ fn test_format() {
     }
 
     assert_eq!(format("(  sort)"), "(sort)\n");
+
+    // Test that backtick and comma don't get spaces after them
+    assert_eq!(format("(let x `y)"), "(let x `y)\n");
+    assert_eq!(format("(let x `(f a))"), "(let x `(f a))\n");
+    assert_eq!(format("(let x `(f ,y))"), "(let x `(f ,y))\n");
+    assert_eq!(format("`x"), "`x\n");
+    assert_eq!(format("`,x"), "`,x\n");
 }
 
 #[test]
@@ -675,11 +708,13 @@ fn test_completion() {
     fn complete_not(src: &str, pos: Point, label: &str) {
         let src_tree = SrcTree::new(src.to_string());
 
-        assert!(src_tree
-            .completion(pos)
-            .into_iter()
-            .find(|c| c.label == label)
-            .is_none());
+        assert!(
+            src_tree
+                .completion(pos)
+                .into_iter()
+                .find(|c| c.label == label)
+                .is_none()
+        );
     }
     fn not_complete(src: &str, pos: Point) {
         let src_tree = SrcTree::new(src.to_string());
