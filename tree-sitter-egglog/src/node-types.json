@@ -175,6 +175,14 @@
         {
           "type": "literal",
           "named": true
+        },
+        {
+          "type": "quote_expr",
+          "named": true
+        },
+        {
+          "type": "unquote_expr",
+          "named": true
         }
       ]
     }
@@ -305,6 +313,25 @@
     }
   },
   {
+    "type": "quote_expr",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "backtick",
+          "named": true
+        },
+        {
+          "type": "expr",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "schedule",
     "named": true,
     "fields": {},
@@ -365,6 +392,7 @@
   {
     "type": "source_file",
     "named": true,
+    "root": true,
     "fields": {},
     "children": {
       "multiple": true,
@@ -431,6 +459,25 @@
     }
   },
   {
+    "type": "unquote_expr",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "comma_op",
+          "named": true
+        },
+        {
+          "type": "expr",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "variant",
     "named": true,
     "fields": {},
@@ -460,10 +507,6 @@
         }
       ]
     }
-  },
-  {
-    "type": ",",
-    "named": false
   },
   {
     "type": "-inf",
@@ -522,12 +565,8 @@
     "named": false
   },
   {
-    "type": "[",
-    "named": false
-  },
-  {
-    "type": "]",
-    "named": false
+    "type": "backtick",
+    "named": true
   },
   {
     "type": "birewrite",
@@ -546,8 +585,13 @@
     "named": false
   },
   {
-    "type": "comment",
+    "type": "comma_op",
     "named": true
+  },
+  {
+    "type": "comment",
+    "named": true,
+    "extra": true
   },
   {
     "type": "datatype",
@@ -719,6 +763,7 @@
   },
   {
     "type": "ws",
-    "named": true
+    "named": true,
+    "extra": true
   }
 ]
